@@ -76,10 +76,11 @@ const getAllFromDB = async (params: any, options: any) => {
   };
 };
 
-const getAdminByIdFromDB = async (id: string) => {
+const getAdminByIdFromDB = async (id: string): Promise<Admin | null> => {
   return await prisma.admin.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
     include: {
       user: true,
@@ -87,7 +88,10 @@ const getAdminByIdFromDB = async (id: string) => {
   });
 };
 
-const updateAdminByIdFromDB = async (id: string, data: Partial<Admin>) => {
+const updateAdminByIdFromDB = async (
+  id: string,
+  data: Partial<Admin>
+): Promise<Admin | null> => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
@@ -97,6 +101,7 @@ const updateAdminByIdFromDB = async (id: string, data: Partial<Admin>) => {
   return await prisma.admin.update({
     where: {
       id,
+      isDeleted: false,
     },
     data,
   });
@@ -129,6 +134,7 @@ const softDeleteAdminByIdFromDB = async (id: string) => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
