@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient, UserRole } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../../../shared/prisma";
 
 const createAdmin = async (data: any) => {
   // const hashedPassword = await bcrypt.hash(data?.password, 10);

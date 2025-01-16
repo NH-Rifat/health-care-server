@@ -1,30 +1,13 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { searchAbleFields } from "./admin.constant";
-
-const prisma = new PrismaClient();
-
-const calculatePagination = (options: {
-  limit?: number;
-  page?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}) => {
-  const { limit, page } = options;
-  return {
-    take: Number(limit) || 1,
-    skip: (Number(page) - 1) * Number(limit) || 10,
-    orderBy: {
-      [options.sortBy || "createdAt"]: options.sortOrder || "desc",
-    },
-  };
-};
+import { calculatePagination } from "../../../helpers/paginationHelper";
+import prisma from "../../../shared/prisma";
 
 const getAllFromDB = async (params: any, options: any) => {
   const { searchTerm, ...filteredData } = params;
-  const { limit, page } = options;
   // console.log(params);
   // console.log(filteredData);
-  const { take, skip, orderBy } = calculatePagination(options);
+  const { page, limit, skip, orderBy } = calculatePagination(options);
   const conditions = [];
 
   if (params?.searchTerm) {
@@ -75,11 +58,9 @@ const getAllFromDB = async (params: any, options: any) => {
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
-    take,
+    take: limit,
     skip,
-    orderBy: {
-      [options.sortBy || "createdAt"]: options.sortOrder || "desc",
-    },
+    orderBy,
 
     include: {
       user: true,
