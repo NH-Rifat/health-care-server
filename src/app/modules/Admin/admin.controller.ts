@@ -71,7 +71,7 @@ const updateAdminById = async (req: Request, res: Response) => {
 const deleteAdminById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const result = await AdminService.deleteAdminByIdFromDB(id);
+    const result = await AdminService.softDeleteAdminByIdFromDB(id);
     res.status(200).json({
       success: true,
       message: "Admin user deleted successfully",
