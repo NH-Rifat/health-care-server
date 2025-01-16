@@ -5,11 +5,8 @@ import prisma from "../../../shared/prisma";
 
 const getAllFromDB = async (params: any, options: any) => {
   const { searchTerm, ...filteredData } = params;
-  // console.log(params);
-  // console.log(filteredData);
   const { page, limit, skip, orderBy } = calculatePagination(options);
   const conditions = [];
-
   if (params?.searchTerm) {
     conditions.push(
       {
@@ -66,9 +63,31 @@ const getAllFromDB = async (params: any, options: any) => {
       user: true,
     },
   });
-  return result;
+  const totalRecords = await prisma.admin.count({
+    where: whereConditions,
+  });
+  return {
+    data: result,
+    meta: {
+      page,
+      limit,
+      totalRecords,
+    },
+  };
+};
+
+const getAdminByIdFromDB = async (id: string) => {
+  return await prisma.admin.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: true,
+    },
+  });
 };
 
 export const AdminService = {
   getAllFromDB,
+  getAdminByIdFromDB,
 };
