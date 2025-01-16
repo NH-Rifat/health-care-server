@@ -49,7 +49,46 @@ const getAdminById = async (req: Request, res: Response) => {
   }
 };
 
+const updateAdminById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const data = req.body;
+  try {
+    const result = await AdminService.updateAdminByIdFromDB(id, data);
+    res.status(200).json({
+      success: true,
+      message: "Admin user updated successfully",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err instanceof Error ? err.name : "Internal server error",
+      data: null,
+    });
+  }
+};
+
+const deleteAdminById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await AdminService.deleteAdminByIdFromDB(id);
+    res.status(200).json({
+      success: true,
+      message: "Admin user deleted successfully",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err instanceof Error ? err.name : "Internal server error",
+      data: null,
+    });
+  }
+};
+
 export const adminController = {
   getAllAdmin,
   getAdminById,
+  updateAdminById,
+  deleteAdminById,
 };
