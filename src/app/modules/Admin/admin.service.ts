@@ -1,13 +1,32 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { searchAbleFields } from "./admin.constant";
 
 const prisma = new PrismaClient();
 
-const getAllFromDB = async (params: any) => {
+const calculatePagination = (options: {
+  limit?: number;
+  page?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}) => {
+  const { limit, page } = options;
+  return {
+    take: Number(limit) || 1,
+    skip: (Number(page) - 1) * Number(limit) || 10,
+    orderBy: {
+      [options.sortBy || "createdAt"]: options.sortOrder || "desc",
+    },
+  };
+};
+
+const getAllFromDB = async (params: any, options: any) => {
   const { searchTerm, ...filteredData } = params;
-  console.log(params);
-  console.log(filteredData);
+  const { limit, page } = options;
+  // console.log(params);
+  // console.log(filteredData);
+  const { take, skip, orderBy } = calculatePagination(options);
   const conditions = [];
-  const searchAbleFields = ["name", "email"];
+
   if (params?.searchTerm) {
     conditions.push(
       {
@@ -24,6 +43,7 @@ const getAllFromDB = async (params: any) => {
     );
   }
 
+  // way to insert the conditions in the query of AND conditions
   if (Object.keys(filteredData).length > 0) {
     for (const key in filteredData) {
       if (Object.hasOwnProperty.call(filteredData, key)) {
@@ -39,6 +59,7 @@ const getAllFromDB = async (params: any) => {
     }
   }
 
+  // another way to do the same thing which will insert another AND condition in the query of AND conditions
   // if (Object.keys(filteredData).length > 0) {
   //   conditions.push({
   //     AND: Object.keys(filteredData).map((key) => ({
@@ -54,6 +75,12 @@ const getAllFromDB = async (params: any) => {
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
+    take,
+    skip,
+    orderBy: {
+      [options.sortBy || "createdAt"]: options.sortOrder || "desc",
+    },
+
     include: {
       user: true,
     },

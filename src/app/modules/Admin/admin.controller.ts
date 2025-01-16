@@ -1,10 +1,22 @@
+import { pickValidPropertyWithValue } from "../../../shared/pick";
+import { adminFilterableFields } from "./admin.constant";
 import { AdminService } from "./admin.service";
 import { Request, Response } from "express";
 
 const getAllAdmin = async (req: Request, res: Response) => {
-  const { query } = req;
+  const filtersQuery = pickValidPropertyWithValue(
+    req.query,
+    adminFilterableFields
+  );
+  const options = pickValidPropertyWithValue(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+  console.log(options);
   try {
-    const result = await AdminService.getAllFromDB(query);
+    const result = await AdminService.getAllFromDB(filtersQuery, options);
     res.status(200).json({
       success: true,
       message: "Admin users fetched successfully",
