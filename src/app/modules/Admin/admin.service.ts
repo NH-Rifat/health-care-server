@@ -2,8 +2,13 @@ import { Admin, Prisma, UserStatus } from "@prisma/client";
 import { searchAbleFields } from "./admin.constant";
 import { calculatePagination } from "../../../helpers/paginationHelper";
 import prisma from "../../../shared/prisma";
+import { IAdminFilterPropertyRequest } from "./admin.interface";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
-const getAllFromDB = async (params: any, options: any) => {
+const getAllFromDB = async (
+  params: IAdminFilterPropertyRequest,
+  options: IPaginationOptions
+) => {
   const { searchTerm, ...filteredData } = params;
   const { page, limit, skip, orderBy } = calculatePagination(options);
   const conditions = [];
@@ -27,7 +32,7 @@ const getAllFromDB = async (params: any, options: any) => {
   if (Object.keys(filteredData).length > 0) {
     for (const key in filteredData) {
       if (Object.hasOwnProperty.call(filteredData, key)) {
-        const value = filteredData[key];
+        const value = (filteredData as any)[key];
         if (value) {
           conditions.push({
             [key]: {
