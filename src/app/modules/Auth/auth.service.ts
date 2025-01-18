@@ -1,6 +1,7 @@
 import prisma from "../../../shared/prisma";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { generateToken, verifyToken } from "../../../helpers/jwtHelpers";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload;
@@ -10,30 +11,23 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email,
     },
   });
-
   const isCorrectPassword = await bcrypt.compare(password, userData.password);
-  const accessToken = jwt.sign(
-    {
-      email: userData.email,
-      role: userData.role,
-    },
-    "abcd",
-    {
-      algorithm: "HS256",
-      expiresIn: "5m",
-    }
-  );
 
-  const refreshToken = jwt.sign(
+  const accessToken = await generateToken(
     {
       email: userData.email,
       role: userData.role,
     },
     "abcd",
+    "5m"
+  );
+  const refreshToken = await generateToken(
     {
-      algorithm: "HS256",
-      expiresIn: "1d",
-    }
+      email: userData.email,
+      role: userData.role,
+    },
+    "efgh",
+    "7d"
   );
 
   if (isCorrectPassword) {
@@ -47,6 +41,35 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
 };
 
+const refreshToken = async (refreshToken: string) => {
+  let decodedData;
+  try {
+    decodedData = await verifyToken(refreshToken, "efgh");
+  } catch (error) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: decodedData.email,
+    },
+  });
+
+  const accessToken = await generateToken(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    "abcd",
+    "5m"
+  );
+  return {
+    accessToken,
+    needChangePassword: userData.needChangePassword,
+  };
+};
+
 export const authServices = {
   loginUser,
+  refreshToken,
 };
