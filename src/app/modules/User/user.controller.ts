@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { userService } from "./user.service";
 
 const createAdmin = async (req: Request, res: Response) => {
-  // console.log(req.body);
   try {
     const result = await userService.createAdmin(req.body);
     res.status(201).json({

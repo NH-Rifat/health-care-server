@@ -5,13 +5,19 @@ import { config } from "../../config";
 import ApiError from "../Errors/ApiError";
 
 const authGuard = (...roles: string[]) => {
-  return async (req: Request, res: Response, next: Function) => {
+  return async (
+    req: Request & { user?: any },
+    res: Response,
+    next: Function
+  ) => {
     try {
       const token = req.headers.authorization;
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "Unauthorized");
       }
       const verifiedUser = verifyToken(token, config.jwt.jwt_secret as string);
+      console.log(verifiedUser);
+      req.user = verifiedUser;
       if (roles?.length && !roles?.includes(verifiedUser?.role)) {
         throw new ApiError(httpStatus.FORBIDDEN, "Unauthorized");
       }
