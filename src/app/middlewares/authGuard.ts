@@ -16,7 +16,7 @@ const authGuard = (...roles: string[]) => {
         throw new ApiError(httpStatus.UNAUTHORIZED, "Unauthorized");
       }
       const verifiedUser = verifyToken(token, config.jwt.jwt_secret as string);
-      console.log(verifiedUser);
+      // console.log(verifiedUser);
       req.user = verifiedUser;
       if (roles?.length && !roles?.includes(verifiedUser?.role)) {
         throw new ApiError(httpStatus.FORBIDDEN, "Unauthorized");
