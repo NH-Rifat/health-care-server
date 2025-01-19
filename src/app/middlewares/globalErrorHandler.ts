@@ -10,7 +10,7 @@ const globalErrorHandler = (
   res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
     success: false,
     message: err.message,
-    error: err?.stack,
+    error: err,
   });
 };
 

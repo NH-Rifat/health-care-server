@@ -16,7 +16,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   });
   const isCorrectPassword = await bcrypt.compare(password, userData.password);
 
-  const accessToken = await generateToken(
+  const accessToken = generateToken(
     {
       email: userData.email,
       role: userData.role,
@@ -24,7 +24,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     config.jwt.jwt_secret as string,
     config.jwt.jwt_expires_in as string
   );
-  const refreshToken = await generateToken(
+  const refreshToken = generateToken(
     {
       email: userData.email,
       role: userData.role,
@@ -47,7 +47,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
 const refreshToken = async (refreshToken: string) => {
   let decodedData;
   try {
-    decodedData = await verifyToken(refreshToken, "efgh");
+    decodedData = verifyToken(refreshToken, "efgh");
   } catch (error) {
     throw new Error("Invalid refresh token");
   }
@@ -59,7 +59,7 @@ const refreshToken = async (refreshToken: string) => {
     },
   });
 
-  const accessToken = await generateToken(
+  const accessToken = generateToken(
     {
       email: userData.email,
       role: userData.role,
