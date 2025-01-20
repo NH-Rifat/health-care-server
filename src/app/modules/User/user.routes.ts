@@ -10,17 +10,27 @@ import { userValidationSchema } from "./user.validation";
 const router = express.Router();
 
 router.post(
-  "/",
+  "/create-admin",
   authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   fileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidationSchema.createAdmin.parse(
       JSON.parse(req.body.data)
     );
-    return userController.createAdmin(req, res);
-  },
+    return userController.createAdmin(req, res, next);
+  }
+);
 
-  userController.createAdmin
+router.post(
+  "/create-doctor",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = userValidationSchema.createDoctor.parse(
+      JSON.parse(req.body.data)
+    );
+    return userController.createDoctor(req, res, next);
+  }
 );
 
 export const userRoutes = router;

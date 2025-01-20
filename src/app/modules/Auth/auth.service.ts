@@ -49,7 +49,10 @@ const loginUser = async (payload: { email: string; password: string }) => {
 const refreshToken = async (refreshToken: string) => {
   let decodedData;
   try {
-    decodedData = verifyToken(refreshToken, "efgh");
+    decodedData = verifyToken(
+      refreshToken,
+      config.jwt.refresh_token_secret as string
+    );
   } catch (error) {
     throw new Error("Invalid refresh token");
   }
@@ -66,8 +69,8 @@ const refreshToken = async (refreshToken: string) => {
       email: userData.email,
       role: userData.role,
     },
-    "abcd",
-    "5m"
+    config.jwt.jwt_secret as string,
+    config.jwt.jwt_expires_in as string
   );
   return {
     accessToken,
