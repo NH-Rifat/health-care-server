@@ -9,6 +9,12 @@ import { userValidationSchema } from "./user.validation";
 
 const router = express.Router();
 
+router.get(
+  "/",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  userController.getAllFromDB
+);
+
 router.post(
   "/create-admin",
   authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
