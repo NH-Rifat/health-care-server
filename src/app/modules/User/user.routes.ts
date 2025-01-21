@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import { fileUploader } from "../../../helpers/fileUploader";
 import { userValidationSchema } from "./user.validation";
+import { validateRequest } from "../../middlewares/validateReuest";
 
 const router = express.Router();
 
@@ -48,6 +49,13 @@ router.post(
     );
     return userController.createPatient(req, res, next);
   }
+);
+
+router.patch(
+  "/:id/status",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  validateRequest(userValidationSchema.updateStatus),
+  userController.changeProfileStatus
 );
 
 export const userRoutes = router;
