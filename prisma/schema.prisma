@@ -79,7 +79,7 @@ model Patient {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   patientHealthData PatientHealthData?
-  medicalReports MedicalReport[]
+  medicalReport MedicalReport[]
 
   user              User               @relation(references: [email], fields: [email])
 
