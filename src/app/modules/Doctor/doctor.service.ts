@@ -46,6 +46,7 @@ const getAllFromDB = async (
     const filterConditions = Object.keys(filterData).map((key) => ({
       [key]: {
         equals: (filterData as any)[key],
+        mode: "insensitive",
       },
     }));
     andConditions.push(...filterConditions);

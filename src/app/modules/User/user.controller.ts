@@ -32,7 +32,7 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Patient Created successfuly!",
+    message: "Patient Created successfully!",
     data: result,
   });
 });
