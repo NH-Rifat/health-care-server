@@ -5,6 +5,9 @@ import authGuard from "../../middlewares/authGuard";
 
 const router = express.Router();
 
-router.get("/", authGuard(UserRole.DOCTOR), ScheduleController.getAllFromDB);
-
+router.post(
+  "/create",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  ScheduleController.createSchedule
+);
 export const ScheduleRoutes = router;

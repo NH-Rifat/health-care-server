@@ -3,13 +3,14 @@ import prisma from "../../../shared/prisma";
 import { Prisma, Schedule } from "@prisma/client";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { IAuthUser } from "../../interfaces/common";
+import { ISchedule } from "./schedule.interface";
 
 const convertDateTime = async (date: Date) => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() + offset);
 };
 
-const insertIntoDB = async (payload: any): Promise<Schedule[]> => {
+const insertIntoDB = async (payload: ISchedule): Promise<Schedule[]> => {
   const { startDate, endDate, startTime, endTime } = payload;
 
   const intervalTime = 30;
@@ -44,7 +45,7 @@ const insertIntoDB = async (payload: any): Promise<Schedule[]> => {
     while (startDateTime < endDateTime) {
       // const scheduleData = {
       //     startDateTime: startDateTime,
-      //     endDateTime: addMinutes(startDateTime, interverlTime)
+      //     endDateTime: addMinutes(startDateTime, intervalTime)
       // }
 
       const s = await convertDateTime(startDateTime);
