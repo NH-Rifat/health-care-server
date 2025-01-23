@@ -10,4 +10,10 @@ router.post(
   authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   ScheduleController.createSchedule
 );
+
+router.get(
+  "/",
+  // authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  ScheduleController.getAllSchedules
+);
 export const ScheduleRoutes = router;
