@@ -5,6 +5,28 @@ import { catchAsync } from "../../../shared/catchAsync";
 import { sendResponse } from "../../../shared/response";
 import { DoctorScheduleService } from "./doctorSchedule.service";
 import { pickValidPropertyWithValue } from "../../../shared/pick";
+import { scheduleFilterableFields } from "./doctorSchedule.constant";
+
+const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+  const filters = pickValidPropertyWithValue(
+    req.query,
+    scheduleFilterableFields
+  );
+  const options = pickValidPropertyWithValue(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+  const result = await DoctorScheduleService.getAllFromDB(filters, options);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Doctor Schedule retrieval successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
 
 const createSchedule = catchAsync(
   async (req: Request & { user?: IAuthUser }, res: Response) => {
@@ -69,6 +91,7 @@ const deleteFromDB = catchAsync(
 );
 
 export const DoctorScheduleController = {
+  getAllFromDB,
   createSchedule,
   getMySchedule,
   deleteFromDB,
