@@ -18,4 +18,10 @@ router.get(
   authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
   ScheduleController.getByIdFromDB
 );
+
+router.delete(
+  "/:id",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  ScheduleController.deleteFromDB
+);
 export const ScheduleRoutes = router;
