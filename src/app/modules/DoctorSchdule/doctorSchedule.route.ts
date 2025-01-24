@@ -15,5 +15,10 @@ router.get(
   authGuard(UserRole.DOCTOR),
   DoctorScheduleController.getMySchedule
 );
+router.delete(
+  "/:id",
+  authGuard(UserRole.DOCTOR),
+  DoctorScheduleController.deleteFromDB
+);
 
 export const DoctorScheduleRoutes = router;

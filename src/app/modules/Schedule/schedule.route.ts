@@ -11,9 +11,11 @@ router.post(
   ScheduleController.createSchedule
 );
 
+router.get("/", authGuard(UserRole.DOCTOR), ScheduleController.getAllSchedules);
+
 router.get(
-  "/",
-  // authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-  ScheduleController.getAllSchedules
+  "/:id",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
+  ScheduleController.getByIdFromDB
 );
 export const ScheduleRoutes = router;
