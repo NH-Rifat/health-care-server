@@ -1,7 +1,9 @@
-import { Appointment } from "@prisma/client";
+import { Appointment, Prisma, UserRole } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import { IAuthUser } from "../../interfaces/common";
 import { v4 as uuidv4 } from "uuid";
+import { IPaginationOptions } from "../../interfaces/pagination";
+import { calculatePagination } from "../../../helpers/paginationHelper";
 
 const createAppointmentIntoDB = async (user: IAuthUser, payload: any) => {
   const patientData = await prisma.patient.findUniqueOrThrow({
@@ -54,28 +56,28 @@ const createAppointmentIntoDB = async (user: IAuthUser, payload: any) => {
       },
     });
 
-    // // PH-HealthCare-datatime
-    // const today = new Date();
+    // PH-HealthCare-datetime
+    const today = new Date();
 
-    // const transactionId =
-    //   "PH-HealthCare-" +
-    //   today.getFullYear() +
-    //   "-" +
-    //   today.getMonth() +
-    //   "-" +
-    //   today.getDay() +
-    //   "-" +
-    //   today.getHours() +
-    //   "-" +
-    //   today.getMinutes();
+    const transactionId =
+      "PH-HealthCare-" +
+      today.getFullYear() +
+      "-" +
+      today.getMonth() +
+      "-" +
+      today.getDay() +
+      "-" +
+      today.getHours() +
+      "-" +
+      today.getMinutes();
 
-    // await tx.payment.create({
-    //   data: {
-    //     appointmentId: appointmentData.id,
-    //     amount: doctorData.appointmentFee,
-    //     transactionId,
-    //   },
-    // });
+    await tx.payment.create({
+      data: {
+        appointmentId: appointmentData.id,
+        amount: doctorData.appointmentFee,
+        transactionId,
+      },
+    });
 
     return appointmentData;
   });
@@ -83,6 +85,78 @@ const createAppointmentIntoDB = async (user: IAuthUser, payload: any) => {
   return result;
 };
 
-export const appointmentService = {
+const getMyAppointment = async (
+  user: IAuthUser,
+  filters: any,
+  options: IPaginationOptions
+) => {
+  const { limit, page, skip } = calculatePagination(options);
+  const { ...filterData } = filters;
+
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+
+  if (user?.role === UserRole.PATIENT) {
+    andConditions.push({
+      patient: {
+        email: user?.email,
+      },
+    });
+  } else if (user?.role === UserRole.DOCTOR) {
+    andConditions.push({
+      doctor: {
+        email: user?.email,
+      },
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.keys(filterData).map((key) => ({
+      [key]: {
+        equals: (filterData as any)[key],
+      },
+    }));
+    andConditions.push(...filterConditions);
+  }
+
+  const whereConditions: Prisma.AppointmentWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  // console.dir(whereConditions, { depth: "infinity" });
+
+  const result = await prisma.appointment.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: "desc" },
+    include:
+      user?.role === UserRole.PATIENT
+        ? { doctor: true, schedule: true }
+        : {
+            patient: {
+              include: { medicalReport: true, patientHealthData: true },
+            },
+            schedule: true,
+          },
+  });
+
+  const total = await prisma.appointment.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
+
+export const AppointmentService = {
   createAppointmentIntoDB,
+  getMyAppointment,
 };

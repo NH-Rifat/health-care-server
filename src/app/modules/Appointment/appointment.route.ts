@@ -11,4 +11,10 @@ router.post(
   AppointmentController.createAppointment
 );
 
+router.get(
+  "/my-appointment",
+  authGuard(UserRole.PATIENT, UserRole.DOCTOR),
+  AppointmentController.getMyAppointment
+);
+
 export const AppointmentRoutes = router;

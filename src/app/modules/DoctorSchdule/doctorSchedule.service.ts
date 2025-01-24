@@ -100,6 +100,8 @@ const getMySchedule = async (
   options: IPaginationOptions,
   user: IAuthUser
 ) => {
+  // find the doctor
+
   const { limit, page, skip } = calculatePagination(options);
   const { startDate, endDate, ...filterData } = filters;
   //console.log(filterData)
@@ -150,6 +152,8 @@ const getMySchedule = async (
       }),
     });
   }
+
+  // find only us
 
   const whereConditions: Prisma.DoctorSchedulesWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
