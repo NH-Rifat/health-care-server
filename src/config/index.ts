@@ -21,4 +21,13 @@ export const config = {
     email: process.env.EMAIL,
     app_pass: process.env.APP_PASSWORD,
   },
+  ssl: {
+    storeId: process.env.STORE_ID,
+    storePassword: process.env.STORE_PASSWORD,
+    successURl: process.env.SUCCESS_URL,
+    failURl: process.env.FAIL_URL,
+    cancelURl: process.env.CANCEL_URL,
+    sslPaymentAPI: process.env.SSL_PAYMENT_API_URL,
+    sslValidationAPI: process.env.SSL_VALIDATION_API_URL,
+  },
 };
