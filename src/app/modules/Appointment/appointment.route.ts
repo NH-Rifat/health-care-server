@@ -17,4 +17,10 @@ router.get(
   AppointmentController.getMyAppointment
 );
 
+router.patch(
+  "/status/:id",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
+  AppointmentController.changeAppointmentStatus
+);
+
 export const AppointmentRoutes = router;

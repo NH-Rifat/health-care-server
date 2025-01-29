@@ -1,7 +1,8 @@
 import axios from "axios";
 import { config } from "../../../config";
+import { IPaymentData } from "./ssl.interface";
 
-const initPayment = async (paymentData: any) => {
+const initPayment = async (paymentData: IPaymentData) => {
   console.log({ paymentData });
 
   const data = {
