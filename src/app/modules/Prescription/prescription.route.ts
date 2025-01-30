@@ -20,4 +20,10 @@ router.get(
   PrescriptionController.patientPrescription
 );
 
+router.get(
+  "/",
+  authGuard(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  PrescriptionController.getAllFromDB
+);
+
 export const PrescriptionRoutes = router;

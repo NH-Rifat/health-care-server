@@ -5,6 +5,7 @@ import { pickValidPropertyWithValue } from "../../../shared/pick";
 import { sendResponse } from "../../../shared/response";
 import { IAuthUser } from "../../interfaces/common";
 import { PrescriptionService } from "./prescription.service";
+import { prescriptionFilterableFields } from "./prescription.constant";
 
 const createPrescription = catchAsync(
   async (req: Request & { user?: IAuthUser }, res: Response) => {
@@ -45,7 +46,29 @@ const patientPrescription = catchAsync(
   }
 );
 
+const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+  const filters = pickValidPropertyWithValue(
+    req.query,
+    prescriptionFilterableFields
+  );
+  const options = pickValidPropertyWithValue(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+  const result = await PrescriptionService.getAllFromDB(filters, options);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Prescriptions retrieval successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 export const PrescriptionController = {
   createPrescription,
   patientPrescription,
+  getAllFromDB,
 };
