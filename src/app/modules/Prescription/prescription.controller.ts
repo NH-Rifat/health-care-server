@@ -22,6 +22,30 @@ const createPrescription = catchAsync(
   }
 );
 
+const patientPrescription = catchAsync(
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;
+    const options = pickValidPropertyWithValue(req.query, [
+      "limit",
+      "page",
+      "sortBy",
+      "sortOrder",
+    ]);
+    const result = await PrescriptionService.patientPrescription(
+      user as IAuthUser,
+      options
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Prescription fetched successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+
 export const PrescriptionController = {
   createPrescription,
+  patientPrescription,
 };
