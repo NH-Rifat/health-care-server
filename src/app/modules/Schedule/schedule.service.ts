@@ -5,7 +5,6 @@ import { IPaginationOptions } from "../../interfaces/pagination";
 import { IAuthUser } from "../../interfaces/common";
 import { IFilterRequest, ISchedule } from "./schedule.interface";
 import { calculatePagination } from "../../../helpers/paginationHelper";
-import { IPatientFilterRequest } from "../Patient/patient.interface";
 
 const convertDateTime = async (date: Date) => {
   const offset = date.getTimezoneOffset();
